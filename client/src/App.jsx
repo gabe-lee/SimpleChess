@@ -1,9 +1,9 @@
 import React from 'react';
 import GameBoard from './GameBoard.jsx';
 
-const _NONE_ = 0, 
-  B_PAWN = 1, B_ROOK = 2, B_KNIT = 3, B_BISH = 4, B_QUEN = 5, B_KING = 6,
-  W_PAWN = -1, W_ROOK = -2, W_KNIT = -3, W_BISH = -4, W_QUEN = -5, W_KING = -6;
+const _NONE_ = 0, WHITE = 10, BLACK = -10,
+  B_PAWN = -1, B_ROOK = -2, B_KNIT = -3, B_BISH = -4, B_QUEN = -5, B_KING = -6,
+  W_PAWN =  1, W_ROOK =  2, W_KNIT =  3, W_BISH =  4, W_QUEN =  5, W_KING =  6;
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -22,14 +22,27 @@ export default class App extends React.Component {
         [_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_],
         [W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN],
         [W_ROOK,W_KNIT,W_BISH,W_QUEN,W_KING,W_BISH,W_KNIT,W_ROOK]
-      ]
+      ],
+      turn: WHITE,
+      selectedPiece: _NONE_,
+      selectedCoord: [],
+      pieceMoves: []
+    }
+
+    this.onSpaceClick = event => {
+      console.log(event.target)
+      let row = event.target.data.loc.charAt(0);
+      let col = event.target.data.loc.charAt(1);
+      let piece = event.target.pieceType;
+      
+      console.log(row,col,piece)
     }
   }
 
   render() {
     return (
       <>
-        <GameBoard boardState={this.state.board}/>
+        <GameBoard boardState={this.state.board} onSpaceClick={this.onSpaceClick}/>
       </>
     );
   }
