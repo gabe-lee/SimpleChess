@@ -4,7 +4,10 @@
   "description": "Web-based chess app",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start_server": "nodemon server.js",
+    "start_client": "webpack-dev-server --open --inline --mode development",
+    "build": "webpack --mode production"
   },
   "repository": {
     "type": "git",
