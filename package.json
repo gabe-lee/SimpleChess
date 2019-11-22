@@ -1,0 +1,37 @@
+{
+  "name": "simple-chess",
+  "version": "1.0.0",
+  "description": "Web-based chess app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabe-Lee/SimpleChess.git"
+  },
+  "author": "Gabriel Anderson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Gabe-Lee/SimpleChess/issues"
+  },
+  "homepage": "https://github.com/Gabe-Lee/SimpleChess#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mysql2": "^2.0.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "sequelize": "^5.21.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-react": "^7.7.0",
+    "babel-loader": "^8.0.6",
+    "nodemon": "^2.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  }
+}
