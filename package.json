@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start_server": "nodemon server.js",
-    "start_client": "webpack-dev-server --open --inline --mode development",
+    "start_simple": "webpack -d",
+    "start_client": "webpack-dev-server --open --inline --mode development --devtool inline-source-map",
     "build": "webpack --mode production"
   },
   "repository": {
