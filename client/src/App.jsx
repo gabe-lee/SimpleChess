@@ -98,11 +98,12 @@ export default class App extends React.Component {
     let mods = diag ? [[1,1],[1,-1],[-1,-1],[-1,1]] : [[1,0],[-1,0],[0,1],[0,-1]];
     for (let [x,y] of mods) {
       for (let [r,c,d] = [row,col,dist]; this.inRange(r,c) && d > 0; r += y, c += x, d--) {
-        if (grid[r][c] < 0 !== piece < 0) {
+        if (d === dist) continue;
+        if (grid[r][c] === 0) {
+          moves[r][c] = 1;
+        } else if (grid[r][c] < 0 !== piece < 0) {
           moves[r][c] = 1;
           break;
-        } else if (grid[r][c] === 0) {
-          moves[r][c] = 1;
         } else {
           break;
         }
@@ -123,7 +124,6 @@ export default class App extends React.Component {
       if (!this.inRange(r, c)) {
         continue;
       }
-      console.log('grid:',c, r, '=',grid[r][c], 'and piece=',piece)
       if (grid[r][c] === 0 || (grid[r][c] < 0 !== piece < 0)) {
         moves[r][c] = 1;
       }
@@ -145,18 +145,18 @@ export default class App extends React.Component {
         break;
       }
       let space = grid[row-(i*piece)][col];
-      if (space === 0 || (space < 0 && !(piece < 0))) {
-        
+      if (space === 0) { 
         moves[row-(i*piece)][col] = 1;
-        if (space < 0 && !(piece < 0)) {
-          break;
-        }
+      } else {
+        break;
       }
     }
-    if (grid[row-piece][col - 1] < 0 && !(piece < 0)) {
+    let left = grid[row-piece][col - 1];
+    if (left !== 0 && left < 0 !== piece < 0) {
       moves[row-piece][col - 1] = 1;
     }
-    if (grid[row-piece][col + 1] < 0 && !(piece < 0)) {
+    let right = grid[row-piece][col + 1];
+    if (right !== 0 && right < 0 !== piece < 0) {
       moves[row-piece][col + 1] = 1;
     }
     return moves;
