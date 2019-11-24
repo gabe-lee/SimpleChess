@@ -1,43 +1,39 @@
 import React from 'react';
 import GameBoard from './GameBoard.jsx';
+import M from './Map.js';
 
-const _NONE_ = 0, WHITE = 10, BLACK = -10,
-  B_PAWN = -1, B_ROOK = -2, B_KNIT = -3, B_BISH = -4, B_QUEN = -5, B_KING = -6,
-  W_PAWN =  1, W_ROOK =  2, W_KNIT =  3, W_BISH =  4, W_QUEN =  5, W_KING =  6;
 export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       board: [
-        [B_ROOK,B_KNIT,B_BISH,B_QUEN,B_KING,B_BISH,B_KNIT,B_ROOK],
-        [B_PAWN,B_PAWN,B_PAWN,B_PAWN,B_PAWN,B_PAWN,B_PAWN,B_PAWN],
-        [_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_],
-        [_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_],
-        [_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_],
-        [_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_,_NONE_],
-        [W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN,W_PAWN],
-        [W_ROOK,W_KNIT,W_BISH,W_QUEN,W_KING,W_BISH,W_KNIT,W_ROOK]
+        [M.B_ROOK,M.B_KNIT,M.B_BISH,M.B_QUEN,M.B_KING,M.B_BISH,M.B_KNIT,M.B_ROOK],
+        [M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN],
+        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
+        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
+        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
+        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
+        [M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN],
+        [M.W_ROOK,M.W_KNIT,M.W_BISH,M.W_QUEN,M.W_KING,M.W_BISH,M.W_KNIT,M.W_ROOK]
       ],
-      turn: WHITE,
-      selectedPiece: _NONE_,
+      turn: M.WHITE,
+      selectedPiece: M._NONE_,
       selectedCoord: [],
       pieceMoves: [
         [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-      ]
+      ],
+      winner: M._NONE_
     }
 
     this.onSpaceClick = event => {
+      if (this.state.winner) return;
       let data = event.target.dataset;
       let piece = Number(data.piece);
       let row = Number(data.loc.charAt(0));
       let col = Number(data.loc.charAt(1))
-      console.log('clicked! data.piece:', piece, 'turn: ', this.state.turn)
-      console.log(`Logic: (${this.state.turn} < 0 === ${piece} < 0) \n-> (${this.state.turn  < 0} === ${piece < 0}) \n-> ${(this.state.turn  < 0 === piece < 0)}`)
       if (piece !== 0 && this.state.turn < 0 === piece < 0) {
-        console.log('clicked piece of same turn color! turn: ', this.state.turn, 'piece: ', piece)
-        console.log('clicked piece of same turn color! turn: ', this.state.turn, 'piece: ', piece)
         this.setState({
           selectedPiece: piece,
           selectedCoord: [row, col],
@@ -49,12 +45,16 @@ export default class App extends React.Component {
         })
       } else if (this.state.pieceMoves[row][col] === 1) {
         let newBoard = this.state.board.slice();
+        this.state.winner = 
+        newBoard[row][col] === 6 ? M.BLACK :
+        newBoard[row][col] === -6 ? M.WHITE : M._NONE_;
         newBoard[row][col] = this.state.selectedPiece;
-        newBoard[this.state.selectedCoord[0]][this.state.selectedCoord[1]] = _NONE_;
+        let [oldRow, oldCol] = this.state.selectedCoord;
+        newBoard[oldRow][oldCol] = M._NONE_;
         this.setState({
           board: newBoard,
-          turn: this.state.turn === WHITE ? BLACK : WHITE,
-          selectedPiece: _NONE_,
+          turn: this.state.turn === M.WHITE ? M.BLACK : M.WHITE,
+          selectedPiece: M._NONE_,
           selectedCoord: [],
           pieceMoves: [
             [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
@@ -71,20 +71,20 @@ export default class App extends React.Component {
       [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
     ];
     let piece = this.state.selectedPiece;
-    if ([W_ROOK, W_QUEN].includes(Math.abs(piece))) {
+    if ([M.W_ROOK, M.W_QUEN].includes(Math.abs(piece))) {
       moves = this.setLinearMoves(moves, false);
     }
-    if ([W_BISH, W_QUEN].includes(Math.abs(piece))) {
+    if ([M.W_BISH, M.W_QUEN].includes(Math.abs(piece))) {
       moves = this.setLinearMoves(moves, true);
     }
-    if (W_KNIT === Math.abs(piece)) {
+    if (M.W_KNIT === Math.abs(piece)) {
       moves = this.setKnightMoves(moves);
     }
-    if (W_KING === Math.abs(piece)) {
+    if (M.W_KING === Math.abs(piece)) {
       moves = this.setLinearMoves(moves, false, 2);
       moves = this.setLinearMoves(moves, true, 2);
     }
-    if (W_PAWN === Math.abs(piece)) {
+    if (M.W_PAWN === Math.abs(piece)) {
       moves = this.setPawnMoves(moves);
     }
     return moves;
@@ -137,7 +137,7 @@ export default class App extends React.Component {
     let piece = this.state.selectedPiece;
     let grid = this.state.board;
     let dist = 1;
-    if ((piece === W_PAWN && row === 6) || (piece === B_PAWN && row === 1)) {
+    if ((piece === M.W_PAWN && row === 6) || (piece === M.B_PAWN && row === 1)) {
       dist = 2;
     }
     for (let i = 1; i <= dist; i++) {
