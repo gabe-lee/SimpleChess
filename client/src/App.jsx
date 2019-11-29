@@ -1,176 +1,161 @@
 import React from 'react';
-import GameBoard from './GameBoard.jsx';
-import M from './Map.js';
+import GameBoard from './GameBoard';
+import M from './Map';
 
 export default class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      board: [
-        [M.B_ROOK,M.B_KNIT,M.B_BISH,M.B_QUEN,M.B_KING,M.B_BISH,M.B_KNIT,M.B_ROOK],
-        [M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN,M.B_PAWN],
-        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
-        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
-        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
-        [M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_,M._NONE_],
-        [M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN,M.W_PAWN],
-        [M.W_ROOK,M.W_KNIT,M.W_BISH,M.W_QUEN,M.W_KING,M.W_BISH,M.W_KNIT,M.W_ROOK]
-      ],
+      board: M.NEW_BOARD,
       turn: M.WHITE,
-      selectedPiece: M._NONE_,
+      selectedPiece: M.NONE,
       selectedCoord: [],
-      pieceMoves: [
-        [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-      ],
-      winner: M._NONE_
-    }
+      pieceMoves: M.EMPTY_BOARD,
+      winner: M.NONE,
+    };
 
-    this.onSpaceClick = event => {
-      if (this.state.winner) return;
-      let data = event.target.dataset;
-      let piece = Number(data.piece);
-      let row = Number(data.loc.charAt(0));
-      let col = Number(data.loc.charAt(1))
-      if (piece !== 0 && this.state.turn < 0 === piece < 0) {
+    this.onSpaceClick = (event) => {
+      const {
+        winner, turn, pieceMoves, board, selectedPiece, selectedCoord,
+      } = this.state;
+      if (winner) return;
+      const data = event.target.dataset;
+      const piece = Number(data.piece);
+      const row = Number(data.loc.charAt(0));
+      const col = Number(data.loc.charAt(1));
+      if (piece !== 0 && turn < 0 === piece < 0) {
         this.setState({
           selectedPiece: piece,
           selectedCoord: [row, col],
         }, () => {
-          let validMoves = this.getValidMoves();
+          const validMoves = this.getValidMoves();
           this.setState({
-            pieceMoves: validMoves
-          })
-        })
-      } else if (this.state.pieceMoves[row][col] === 1) {
-        let newBoard = this.state.board.slice();
-        this.state.winner = 
-        newBoard[row][col] === 6 ? M.BLACK :
-        newBoard[row][col] === -6 ? M.WHITE : M._NONE_;
-        newBoard[row][col] = this.state.selectedPiece;
-        let [oldRow, oldCol] = this.state.selectedCoord;
-        newBoard[oldRow][oldCol] = M._NONE_;
+            pieceMoves: validMoves,
+          });
+        });
+      } else if (pieceMoves[row][col] === 1) {
+        const newBoard = board.slice();
+        this.state.winner = { 6: M.BLACK, '-6': M.WHITE }[newBoard[row][col]] || M.NONE;
+        newBoard[row][col] = selectedPiece;
+        const [oldRow, oldCol] = selectedCoord;
+        newBoard[oldRow][oldCol] = M.NONE;
         this.setState({
           board: newBoard,
-          turn: this.state.turn === M.WHITE ? M.BLACK : M.WHITE,
-          selectedPiece: M._NONE_,
+          turn: turn === M.WHITE ? M.BLACK : M.WHITE,
+          selectedPiece: M.NONE,
           selectedCoord: [],
-          pieceMoves: [
-            [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-          ]
+          pieceMoves: M.EMPTY_BOARD,
         });
       }
-    }
+    };
   }
 
   getValidMoves() {
-    let moves = [
-      [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],
-    ];
-    let piece = this.state.selectedPiece;
-    if ([M.W_ROOK, M.W_QUEN].includes(Math.abs(piece))) {
+    let moves = M.EMPTY_BOARD;
+    const { selectedPiece } = this.state;
+    if ([M.W_ROOK, M.W_QUEN].includes(Math.abs(selectedPiece))) {
       moves = this.setLinearMoves(moves, false);
     }
-    if ([M.W_BISH, M.W_QUEN].includes(Math.abs(piece))) {
+    if ([M.W_BISH, M.W_QUEN].includes(Math.abs(selectedPiece))) {
       moves = this.setLinearMoves(moves, true);
     }
-    if (M.W_KNIT === Math.abs(piece)) {
+    if (M.W_KNIT === Math.abs(selectedPiece)) {
       moves = this.setKnightMoves(moves);
     }
-    if (M.W_KING === Math.abs(piece)) {
+    if (M.W_KING === Math.abs(selectedPiece)) {
       moves = this.setLinearMoves(moves, false, 2);
       moves = this.setLinearMoves(moves, true, 2);
     }
-    if (M.W_PAWN === Math.abs(piece)) {
+    if (M.W_PAWN === Math.abs(selectedPiece)) {
       moves = this.setPawnMoves(moves);
     }
     return moves;
   }
 
   setLinearMoves(moves, diag = false, dist = 8) {
-    let row = this.state.selectedCoord[0];
-    let col = this.state.selectedCoord[1];
-    let piece = this.state.selectedPiece;
-    let grid = this.state.board;
-    let mods = diag ? [[1,1],[1,-1],[-1,-1],[-1,1]] : [[1,0],[-1,0],[0,1],[0,-1]];
-    for (let [x,y] of mods) {
-      for (let [r,c,d] = [row,col,dist]; this.inRange(r,c) && d > 0; r += y, c += x, d--) {
-        if (d === dist) continue;
-        if (grid[r][c] === 0) {
-          moves[r][c] = 1;
-        } else if (grid[r][c] < 0 !== piece < 0) {
-          moves[r][c] = 1;
-          break;
-        } else {
-          break;
+    const { selectedCoord, selectedPiece, board } = this.state;
+    const newMoves = moves.slice();
+    const row = selectedCoord[0];
+    const col = selectedCoord[1];
+    const mods = diag ? [[1, 1], [1, -1], [-1, -1], [-1, 1]] : [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    for (let m = 0; m < mods.length; m += 1) {
+      const [x, y] = mods[m];
+      for (let [r, c, d] = [row, col, dist]; App.inRange(r, c) && d > 0; r += y, c += x, d -= 1) {
+        if (d !== dist) {
+          if (board[r][c] === 0) {
+            newMoves[r][c] = 1;
+          } else if (board[r][c] < 0 !== selectedPiece < 0) {
+            newMoves[r][c] = 1;
+            break;
+          } else {
+            break;
+          }
         }
       }
     }
-    return moves;
+    return newMoves;
   }
 
   setKnightMoves(moves) {
-    let row = this.state.selectedCoord[0];
-    let col = this.state.selectedCoord[1];
-    let piece = this.state.selectedPiece;
-    let grid = this.state.board;
-    let mods = [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]];
-    for (let [x,y] of mods) {
-      let r = row + y;
-      let c = col + x;
-      if (!this.inRange(r, c)) {
-        continue;
-      }
-      if (grid[r][c] === 0 || (grid[r][c] < 0 !== piece < 0)) {
-        moves[r][c] = 1;
+    const { selectedCoord, selectedPiece, board } = this.state;
+    const newMoves = moves.slice();
+    const row = selectedCoord[0];
+    const col = selectedCoord[1];
+    const mods = [[2, 1], [2, -1], [-2, 1], [-2, -1], [1, 2], [1, -2], [-1, 2], [-1, -2]];
+    for (let m = 0; m < mods.length; m += 1) {
+      const [x, y] = mods[m];
+      const r = row + y;
+      const c = col + x;
+      if (App.inRange(r, c) && (board[r][c] === 0 || (board[r][c] < 0 !== selectedPiece < 0))) {
+        newMoves[r][c] = 1;
       }
     }
-    return moves;
+    return newMoves;
   }
 
   setPawnMoves(moves) {
-    let row = this.state.selectedCoord[0];
-    let col = this.state.selectedCoord[1];
-    let piece = this.state.selectedPiece;
-    let grid = this.state.board;
+    const { selectedCoord, selectedPiece, board } = this.state;
+    const newMoves = moves.slice();
+    const row = selectedCoord[0];
+    const col = selectedCoord[1];
     let dist = 1;
-    if ((piece === M.W_PAWN && row === 6) || (piece === M.B_PAWN && row === 1)) {
+    if ((selectedPiece === M.W_PAWN && row === 6) || (selectedPiece === M.B_PAWN && row === 1)) {
       dist = 2;
     }
-    for (let i = 1; i <= dist; i++) {
-      if (!this.inRange(row-(i*piece), col)) {
+    for (let i = 1; i <= dist; i += 1) {
+      if (!App.inRange(row - (i * selectedPiece), col)) {
         break;
       }
-      let space = grid[row-(i*piece)][col];
-      if (space === 0) { 
-        moves[row-(i*piece)][col] = 1;
+      const space = board[row - (i * selectedPiece)][col];
+      if (space === 0) {
+        newMoves[row - (i * selectedPiece)][col] = 1;
       } else {
         break;
       }
     }
-    let left = grid[row-piece][col - 1];
-    if (left !== 0 && left < 0 !== piece < 0) {
-      moves[row-piece][col - 1] = 1;
+    const left = board[row - selectedPiece][col - 1];
+    if (left !== 0 && left < 0 !== selectedPiece < 0) {
+      newMoves[row - selectedPiece][col - 1] = 1;
     }
-    let right = grid[row-piece][col + 1];
-    if (right !== 0 && right < 0 !== piece < 0) {
-      moves[row-piece][col + 1] = 1;
+    const right = board[row - selectedPiece][col + 1];
+    if (right !== 0 && right < 0 !== selectedPiece < 0) {
+      newMoves[row - selectedPiece][col + 1] = 1;
     }
-    return moves;
-  }
-
-  inRange(row, col) {
-    return 0 <= row && row <= 7 && 0 <= col && col<= 7;
+    return newMoves;
   }
 
   render() {
+    const { board, pieceMoves } = this.state;
     return (
       <>
-        <GameBoard boardState={this.state.board} moveState={this.state.pieceMoves} onSpaceClick={this.onSpaceClick}/>
+        <GameBoard
+          boardState={board}
+          moveState={pieceMoves}
+          onSpaceClick={this.onSpaceClick}
+        />
       </>
     );
   }
 }
+App.inRange = (row, col) => row >= 0 && row <= 7 && col >= 0 && col <= 7;

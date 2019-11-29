@@ -1,12 +1,19 @@
 import React from 'react';
-import BoardSpace from './BoardSpace.jsx';
+import PropTypes from 'prop-types';
+import BoardSpace from './BoardSpace';
 
-const GameBoard = props => (
+const GameBoard = ({ moveState, onSpaceClick, boardState }) => (
   <div id="game-board">
-    {[0,1,2,3,4,5,6,7].map(row => {
-      return [0,1,2,3,4,5,6,7].map(col => <BoardSpace color={(row+col) % 2} validMove={props.moveState[row][col]} onSpaceClick={props.onSpaceClick} piece={props.boardState[row][col]} loc={`${row}${col}`} key={`${row}${col}`}/>)
-    })}
+    {[0, 1, 2, 3, 4, 5, 6, 7].map(
+      (row) => [0, 1, 2, 3, 4, 5, 6, 7].map(
+        (col) => <BoardSpace color={(row + col) % 2} validMove={moveState[row][col]} onSpaceClick={onSpaceClick} piece={boardState[row][col]} loc={`${row}${col}`} key={`${row}${col}`} />,
+      ),
+    )}
   </div>
-)
-
+);
+GameBoard.propTypes = {
+  moveState: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  boardState: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)).isRequired,
+  onSpaceClick: PropTypes.func.isRequired,
+};
 export default GameBoard;
