@@ -1,5 +1,3 @@
-import T from 'prop-types';
-
 const MAP = {
   NONE: 0,
   WHITE: 10,
